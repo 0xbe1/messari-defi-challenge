@@ -4,11 +4,13 @@ Challenge writeup: https://messari.notion.site/Messari-DeFi-Challenge-rev-03-17-
 
 GraphQL playground: https://thegraph.com/hosted-service/subgraph/uniswap/uniswap-v3
 
-## Example
+## So, how to get the data?
 
-For liquidity pool ID: 0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8 (USDC/ETH), **US$356,129** in trading fees were collected on 16th March 2022.
+According to the writeup:
 
-Based on the total liquidity in the pool of US$391,636,206, this means that liquidity providers get to earn US$0.00090934 for every US$1 deposited into the pool.
+> For liquidity pool ID: 0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8 (USDC/ETH), **US$356,129** in trading fees were collected on 16th March 2022.
+>
+> Based on the total liquidity in the pool of US$391,636,206, this means that liquidity providers get to earn US$0.00090934 for every US$1 deposited into the pool.
 
 To fetch example data:
 
@@ -56,21 +58,29 @@ Result:
 }
 ```
 
-- `id`: liquidity pool ID
+We learn that:
+
+- `pool.id`: liquidity pool ID
 - `feesUSD`: trading fee
 - `tvlUSD`: total liquidity in the pool
 
-To fetch data:
+## Next, how to tackle the challenge?
 
-```gql
-{
-  poolDayDatas(where: {date_gte: 1637388800, date_lte: 1647930977}) {
-    date
-    pool {
-      id
-    }
-    feesUSD
-    tvlUSD
-  }
-}
+Steps:
+
+1. Fetch all records within the given timeframe
+1. For each pool, **earning rate of each day** = feesUSD / tvlUSD, **earning rate** = sum(earning rate of each day) over the timeframe
+1. Find the pool with largest earning rate
+
+See main.go. To run the program, simply `make run`.
+
+## Result analysis
+
+The program prints:
+
 ```
+0x7845cfd7acb64e988988f0eeec47ec84c4fb0021
+9.32681182538145e+15
+```
+
+The 2nd line looks odd - why is it so large? Investigate the pool ID, we find a record with fees=28.51685188526597089835106461853531 and tvl=0.000000000000003057513373183090360444999031674324. This contributes to the giant earning rate.
