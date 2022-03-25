@@ -84,3 +84,9 @@ The program prints:
 ```
 
 The 2nd line looks odd - why is it so large? Investigate the pool ID, we find a record with fees=28.51685188526597089835106461853531 and tvl=0.000000000000003057513373183090360444999031674324. This contributes to the giant earning rate.
+
+How is this possible? Here I quote Jian Sheng at Messari:
+
+> Someone could have injected the liquidity at the start of the day, does a large trade, and pull out the liquidity at the end of the day. This means that the actual fee collected of a liquidity provider per USD deposited is not exactly 100% accurate as we are not dividing by the most accurate denominator (TVL at the point of time of swap).
+
+> Intricacies of how the UniswapV3 subgraph is built can be found here: https://github.com/Uniswap/v3-subgraph/blob/13938186611c8fd839fa3814f6f3e8d1209057b8/src/utils/intervalUpdates.ts#L43
